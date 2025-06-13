@@ -1,0 +1,16 @@
+{
+  "name": "01.learn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^14.0.0",
+    "crypto": "^1.0.1",
+    "express": "^5.1.0"
+  }
+}

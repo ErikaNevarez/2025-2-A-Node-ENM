@@ -1,0 +1,19 @@
+{
+  "name": "semana2",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "express": "^5.1.0",
+    "figlet": "^1.8.1",
+    "inquirer": "^12.6.3"
+  }
+}
