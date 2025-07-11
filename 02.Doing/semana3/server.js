@@ -1,4 +1,4 @@
-// aqui va solo lo que define al sercvidor,  lo que ejecutara y el puerto, 
+// aqui va solo lo que define al servidor,  lo que ejecutara y el puerto, 
 // osea este archivo es el que inicializa todo
 
 const http = require('http');
