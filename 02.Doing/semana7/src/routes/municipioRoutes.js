@@ -18,7 +18,7 @@ const router = express.Router();
 const {
   obtenerMunicipios,
   obtenerMunicipio,
-  obtenerMunicipiosPorEstado,
+  obtenerMunicipiosEstado,
   crearMunicipio,
   actualizarMunicipio,
   eliminarMunicipio
@@ -28,6 +28,7 @@ const {
 
 router.get('/', obtenerMunicipios);
 router.get('/:id', obtenerMunicipio);
+router.get('/estado/:id', obtenerMunicipiosEstado);
 router.post('/', crearMunicipio);
 router.put('/:id', actualizarMunicipio);
 router.delete('/:id', eliminarMunicipio);

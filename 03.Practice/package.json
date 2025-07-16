@@ -1,0 +1,16 @@
+{
+  "name": "03.practice",
+  "version": "1.0.0",
+  "description": "Esta carpeta está destinada a prácticas libres, retos de código y desafíos adicionales para que puedas reforzar y expandir tus conocimientos en NodeJS de manera autónoma.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
