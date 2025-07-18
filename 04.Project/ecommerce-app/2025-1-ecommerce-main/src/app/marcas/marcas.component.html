@@ -1,0 +1,15 @@
+<div class="dulces-container">
+  @for(item of productosFiltrados; track $index ){
+  
+      <div class="dulces-card">
+         <div class="areaI-card">
+           <img [src]="item.img"  [alt]="item.nombre">
+         </div>
+         <div class="card-content">
+            <p class="nombre">{{item.nombre}}</p>
+            <p class="precio">{{item.precio | currency }}</p>
+            <button (click)=" addToCart(item)">+ Agregar a carrito</button>
+         </div>
+       </div>
+  }
+</div>

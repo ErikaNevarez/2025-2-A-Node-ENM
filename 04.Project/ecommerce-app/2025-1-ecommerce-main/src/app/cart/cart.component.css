@@ -1,0 +1,45 @@
+#contenedor {
+    display: flex;
+}
+
+img {
+width: 180px;
+height: 80px;
+
+}
+
+button {
+border-radius: 8px;
+background-color:rgb(240, 238, 238);
+font-size: 12px;
+text-align: center;
+border-style: none;
+
+}
+
+.product-list {
+    padding: 20px;
+
+}
+
+h2 {
+    font-size: 20px;
+    color: rgb(154, 2, 154);
+    margin: 15px 35px;
+}
+
+.carritoVacio{
+    font-size: 50px;
+    color: rgb(154, 2, 154);
+    margin: 15px 100px;
+}
+
+.confirmarPedido{
+border-radius: 10px;
+margin: 50px 200px; 
+background-color: greenyellow; 
+font-size: 18px;
+text-align: center;
+border-style: none;
+
+}

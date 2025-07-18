@@ -1,0 +1,27 @@
+#container span {
+    width: 125px;
+    font-size: 14px;
+}
+
+.entrega {
+    font-size: 20px;
+    color: rgb(154, 2, 154);
+    margin: 15px 35px;
+
+}
+
+.datos{
+ margin: 50px;   
+}
+
+.pago {
+    font-size: 20px;
+    color: rgb(154, 2, 154);
+    margin: 15px 35px;
+
+}
+
+
+.cerrar {
+   margin: 50px 200px;  ;
+}

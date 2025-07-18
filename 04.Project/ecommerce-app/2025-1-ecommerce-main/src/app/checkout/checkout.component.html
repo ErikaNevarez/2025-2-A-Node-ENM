@@ -1,0 +1,84 @@
+<div id="container">
+  <div>
+    <h3 class="entrega">Entrega</h3>
+ 
+
+    <div class="datos">
+
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">e-mail</span>
+            <input [(ngModel)]="email" name="email"type="text" class="form-control" placeholder="user@example.com" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Nombre</span>
+            <input [(ngModel)]="nombre" name="nombre" type="text" class="form-control" placeholder="Nombre(s)" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Apellidos</span>
+            <input [(ngModel)]="apellidos" name="apellidos"  type="text" class="form-control" placeholder="Apellidos" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Domicilio</span>
+            <input [(ngModel)]="domicilio" name="domicilio"   type="text" class="form-control" placeholder="Calle, número de casa y entre calles" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Colonia</span>
+            <input [(ngModel)]="colonia" name="colonia" type="text" class="form-control" placeholder="Colonia" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Código Postal</span>
+            <input [(ngModel)]="codigoPostal" name="codigoPostal" type="text" class="form-control" placeholder="Código Postal" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Teléfono</span>
+            <input [(ngModel)]="telefono" name="telefono" type="text" class="form-control" placeholder="Teléfono" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Ciudad</span>
+            <input [(ngModel)]="ciudad" name="ciudad" type="text" class="form-control" placeholder="Ciudad" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+       
+        </div>
+        <div class="input-group mb-3">
+            <label class="input-group-text" for="inputGroupSelect01">Estado</label>
+            <select [(ngModel)]="estadosMexico" name="estado" class="form-select" id="inputGroupSelect01">
+                    <option selected>
+                    <ul class="dropdown-menu">
+                        @for (estados of estadosMexico; track $index) {
+                    <li><a class="dropdown-item">{{estados}}</a></li>  }
+                    </ul>
+                    </option>
+            </select>
+        </div>
+
+    </div>
+
+  
+    <div>
+        <h3 class="entrega">Pago</h3>
+    
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Numero de tarjeta</span>
+            <input [(ngModel)]="numeroTarjeta" name="numeroTarjeta" type="text" class="form-control" placeholder="Número de tarjeta"aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Fecha de vencimiento</span>
+            <input [(ngModel)]="fechaVence" name="fechaVence" type="text" class="form-control" placeholder="Fecha de vencimiento (MM/AA)" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Nombre del titular</span>
+            <input [(ngModel)]="nombreTitular" name="nombreTitular" type="text" class="form-control" placeholder="Nombre del titular" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+
+    </div>
+
+</div>
+
+        <div class="cerrar">
+            <button class="btn btn-warning" routerLink='/cerrarPedido'>Cerrar pedido</button>
+        </div>
+
+
+
+
+

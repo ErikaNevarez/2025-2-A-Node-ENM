@@ -1,0 +1,63 @@
+.dulces-container{
+    display: flex;
+    flex-wrap: wrap; /* Permite que las cards pasen a la siguiente línea si no hay suficiente espacio */
+  }
+  
+  .dulces-card{
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 8px;
+    width: 240px;
+    display: flex;
+    flex-direction: column; /* Alinea los elementos internos verticalmente */
+  }
+  
+  .areaI-card {
+    /* No es necesario definir ancho y alto fijos aquí si quieres que la imagen se ajuste */
+    margin-bottom: 10px; /* Espacio entre la imagen y el contenido */
+  }
+  
+  .areaI-card img {
+    display: block; /* Evita espacio extra debajo de la imagen */
+    width: 100%;
+    height: auto;
+    object-fit: cover; /* Ajusta la imagen al contenedor manteniendo la proporción */
+    border-radius: 8px 8px 0 0; /* Opcional: bordes redondeados arriba */
+  }
+  
+  .card-content {
+    display: flex;
+    flex-direction: column; /* Alinea los elementos del contenido verticalmente */
+    gap: 5px; /* Espacio entre los elementos del contenido */
+  }
+  
+  .card-content .nombre {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+  }
+  
+
+  .card-content .precio {
+    font-size: medium;
+    margin-bottom: 10px;
+  }
+
+
+  .card-content button{
+    padding: 8px 15px;
+    background-color: deeppink;
+    color: white;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: auto; /* Empuja el botón hacia abajo si hay espacio */
+  }
+  
+  .card-content button:hover {
+    background-color: greenyellow;
+    color: black;
+    font-size: medium;
+  }

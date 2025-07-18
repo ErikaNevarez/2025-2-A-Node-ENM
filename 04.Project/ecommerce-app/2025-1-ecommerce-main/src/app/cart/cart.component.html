@@ -1,0 +1,31 @@
+
+<h2>Pedido en tu carrito de compras</h2>
+
+<div id="contenedor">
+    <div class="carrito">
+        <div class="carritoVacio">
+            @if(cartItems.length===0){
+                <p>El carrito está vacío</p>
+            }
+        </div>
+
+        <div class="product-list">
+                @for (item of cartItems; track $index) {
+                    <ul>
+                        <img [src]="item.img" alt="">
+                        {{ item.nombre }}
+                        {{ item.precio | currency }}
+                        <button (click)=" removeProduct(item.id_dulce)">Eliminar de carrito</button>
+                    </ul>
+                }
+                
+                <h2>Total de la compra: {{ total | currency }}</h2>
+
+        <div>
+        <button class="confirmarPedido" routerLink='/checkout'>     
+            Confirmar pedido
+        </button>
+        </div>
+    </div>
+
+</div>
