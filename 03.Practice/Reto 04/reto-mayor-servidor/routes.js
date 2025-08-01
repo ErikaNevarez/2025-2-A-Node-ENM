@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const encontrarMayor = require('./encontrarMayor');
+import encontrarMayor from './utils/encontrarMayor.js';
 
 router.get('/mayor', (req, res) => {
   const numerosParam = req.query.numeros;
@@ -19,4 +19,4 @@ router.get('/mayor', (req, res) => {
   res.json({ mayor });
 });
 
-module.exports = router;
+export default router;

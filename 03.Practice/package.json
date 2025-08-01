@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Esta carpeta está destinada a prácticas libres, retos de código y desafíos adicionales para que puedas reforzar y expandir tus conocimientos en NodeJS de manera autónoma.",
   "main": "index.js",
+  "type":"module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js"
@@ -11,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "express": "^5.1.0",
     "nodemon": "^3.1.10"
   }
 }
