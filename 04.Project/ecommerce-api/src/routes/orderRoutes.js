@@ -1,43 +1,45 @@
 import express from 'express';
 import {
-  getNotifications,
-  getNotificationById,
-  getNotificationByUser,
-  createNotification,
-  updateNotification,
-  deleteNotification,
-  markAsRead,
-  markAllAsReadByUser,
-  getUnreadNotificationsByUser,
-} from '../config/controllers/notificationController.js';
+  getOrders,
+  getOrderById,
+  getOrdersByUser,
+  createOrder,
+  updateOrder,
+  cancelOrder,
+  updateOrderStatus,
+  updatePaymentStatus,
+  deleteOrder,
+} from '../controllers/orderController.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
+import isAdmin from '../middlewares/isAdminMiddleware.js';
 
 const router = express.Router();
 
-// Obtener todas las notificaciones (admin)
-router.get('/notifications', getNotifications);
+// Obtener todas las órdenes (admin)
+router.get('/orders', authMiddleware, isAdmin, getOrders);
 
-// Obtener notificaciones no leídas por usuario
-router.get('/notifications/unread/:userId', getUnreadNotificationsByUser);
+// Obtener órdenes por usuario
+router.get('/orders/user/:userId', authMiddleware, getOrdersByUser);
 
-// Obtener notificaciones por usuario
-router.get('/notifications/user/:userId', getNotificationByUser);
+// Obtener orden por ID
+router.get('/orders/:id', authMiddleware, getOrderById);
 
-// Obtener notificación por ID
-router.get('/notifications/:id', getNotificationById);
+// Crear nueva orden
+router.post('/orders', authMiddleware, createOrder);
 
-// Crear nueva notificación
-router.post('/notifications', createNotification);
+// Cancelar orden (función especial)
+router.patch('/orders/:id/cancel', authMiddleware, isAdmin, cancelOrder);
 
-// Marcar una notificación como leída
-router.patch('/notifications/:id/mark-read', markAsRead);
+// Actualizar solo el estado de la orden
+router.patch('/orders/:id/status', authMiddleware, isAdmin, updateOrderStatus);
 
-// Marcar todas las notificaciones de un usuario como leídas
-router.patch('/notifications/user/:userId/mark-all-read', markAllAsReadByUser);
+// Actualizar solo el estado de pago
+router.patch('/orders/:id/payment-status', authMiddleware, isAdmin, updatePaymentStatus);
 
-// Actualizar notificación
-router.put('/notifications/:id', updateNotification);
+// Actualizar orden completa
+router.put('/orders/:id', authMiddleware, isAdmin, updateOrder);
 
-// Eliminar notificación
-router.delete('/notifications/:id', deleteNotification);
+// Eliminar orden (solo si está cancelada)
+router.delete('/orders/:id', authMiddleware, isAdmin, deleteOrder);
 
 export default router;

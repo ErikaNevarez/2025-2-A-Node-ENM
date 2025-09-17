@@ -1,155 +1,283 @@
-import Notification from '../models/notification.js';
+import Order from '../models/order.js';
+import errorHandler from '../middlewares/errorHandler.js';
 
-async function getNotifications(req, res) {
+async function getOrders(req, res) {
   try {
-    const notifications = await Notification.find().populate('user').sort({ message: 1 });
-    res.json(notifications);
+    const orders = await Order.find()
+      .populate('user')
+      .populate('products.productId')
+      .populate('shippingAddress')
+      .populate('paymentMethod')
+      .sort({ status: 1 });
+    res.json(orders);
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 
-async function getNotificationById(req, res) {
+async function getOrderById(req, res) {
   try {
     const id = req.params.id;
-    const notification = await Notification.findById(id).populate('user');
-    if (!notification) {
-      return res.status(404).json({ message: 'Notification not found' });
+    const order = await Order.findById(id)
+      .populate('user')
+      .populate('products.productId')
+      .populate('shippingAddress')
+      .populate('paymentMethod');
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
     }
-    res.json(notification);
+    res.json(order);
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 
-async function getNotificationByUser(req, res) {
+async function getOrdersByUser(req, res) {
   try {
     const userId = req.params.userId;
-    const notifications = await Notification.find({ user: userId }).populate('user').sort({ message: 1 });
-    if (notifications.length === 0) {
-      return res.status(404).json({ message: 'No notifications found for this user' });
+    const orders = await Order.find({ user: userId })
+      .populate('user')
+      .populate('products.productId')
+      .populate('shippingAddress')
+      .populate('paymentMethod')
+      .sort({ status: 1 });
+
+    if (orders.length === 0) {
+      return res.status(404).json({ message: 'No orders found for this user' });
     }
-    res.json(notifications);
+    res.json(orders);
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 
-async function createNotification(req, res) {
+async function createOrder(req, res) {
   try {
-    const { user, message } = req.body;
-    if (!user || !message) {
-      return res.status(400).json({ error: 'User and message are required' });
-    }
-    const newNotification = await Notification.create({
+    const {
       user,
-      message,
-      isRead: false
+      products,
+      shippingAddress,
+      paymentMethod,
+      shippingCost = 0
+    } = req.body;
+
+    // Validaciones básicas
+    if (!user || !products || !Array.isArray(products) || products.length === 0) {
+      return res.status(400).json({ error: 'User and products array are required' });
+    }
+    if (!shippingAddress || !paymentMethod) {
+      return res.status(400).json({ error: 'Shipping address and payment method are required' });
+    }
+
+    // Validar estructura de productos
+    for (const item of products) {
+      if (!item.productId || !item.quantity || !item.price || item.quantity < 1) {
+        return res.status(400).json({
+          error: 'Each product must have productId, quantity >= 1, and price'
+        });
+      }
+    }
+
+    // Calcular precio total
+    const subtotal = products.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const totalPrice = subtotal + shippingCost;
+
+    const newOrder = await Order.create({
+      user,
+      products,
+      shippingAddress,
+      paymentMethod,
+      shippingCost,
+      totalPrice,
+      status: 'pending',
+      paymentStatus: 'pending'
     });
 
-    await newNotification.populate('user');
-    res.status(201).json(newNotification);
+    await newOrder.populate('user');
+    await newOrder.populate('products.productId');
+    await newOrder.populate('shippingAddress');
+    await newOrder.populate('paymentMethod');
+
+    res.status(201).json(newOrder);
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 
-async function updateNotification(req, res) {
+async function updateOrder(req, res) {
   try {
     const { id } = req.params;
-    const { message, isRead } = req.body;
+    const updateData = req.body;
 
-    const updatedNotification = await Notification.findByIdAndUpdate(id,
-      { message, isRead },
-      { new: true }
-    ).populate('user');
+    // Solo permitir actualizar ciertos campos
+    const allowedFields = ['status', 'paymentStatus', 'shippingCost'];
+    const filteredUpdate = {};
 
-    if (updatedNotification) {
-      return res.status(200).json(updatedNotification);
-    } else {
-      return res.status(404).json({ message: 'Notification not found' });
+    for (const field of allowedFields) {
+      if (updateData[field] !== undefined) {
+        filteredUpdate[field] = updateData[field];
+      }
     }
-  } catch (error) {
-    errorHandler(error, req, res);
-  }
-}
 
-async function deleteNotification(req, res) {
-  try {
-    const { id } = req.params;
-    const deletedNotification = await Notification.findByIdAndDelete(id);
-
-    if (deletedNotification) {
-      return res.status(204).send();
-    } else {
-      return res.status(404).json({ message: 'Notification not found' });
+    // Si se actualiza shippingCost, recalcular totalPrice
+    if (filteredUpdate.shippingCost !== undefined) {
+      const order = await Order.findById(id);
+      if (order) {
+        const subtotal = order.products.reduce((total, item) => total + (item.price * item.quantity), 0);
+        filteredUpdate.totalPrice = subtotal + filteredUpdate.shippingCost;
+      }
     }
-  } catch (error) {
-    errorHandler(error, req, res);
-  }
-}
 
-async function markAsRead(req, res) {
-  try {
-    const { id } = req.params;
-    const notification = await Notification.findByIdAndUpdate(
+    const updatedOrder = await Order.findByIdAndUpdate(
       id,
-      { isRead: true },
+      filteredUpdate,
       { new: true }
-    ).populate('user');
+    )
+      .populate('user')
+      .populate('products.productId')
+      .populate('shippingAddress')
+      .populate('paymentMethod');
 
-    if (notification) {
-      return res.status(200).json(notification);
+    if (updatedOrder) {
+      return res.status(200).json(updatedOrder);
     } else {
-      return res.status(404).json({ message: 'Notification not found' });
+      return res.status(404).json({ message: 'Order not found' });
     }
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 
-async function markAllAsReadByUser(req, res) {
+async function cancelOrder(req, res) {
   try {
-    const { userId } = req.params;
-    const result = await Notification.updateMany(
-      { user: userId, isRead: false },
-      { isRead: true }
-    );
+    const { id } = req.params;
 
-    res.status(200).json({
-      message: `${result.modifiedCount} notifications marked as read`,
-      modifiedCount: result.modifiedCount
-    });
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Solo permitir cancelar si el estado lo permite
+    if (order.status === 'delivered' || order.status === 'cancelled') {
+      return res.status(400).json({
+        message: 'Cannot cancel order with status: ' + order.status
+      });
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      {
+        status: 'cancelled',
+        paymentStatus: order.paymentStatus === 'paid' ? 'refunded' : 'failed'
+      },
+      { new: true }
+    )
+      .populate('user')
+      .populate('products.productId')
+      .populate('shippingAddress')
+      .populate('paymentMethod');
+
+    res.status(200).json(updatedOrder);
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 
-async function getUnreadNotificationsByUser(req, res) {
+async function updateOrderStatus(req, res) {
   try {
-    const userId = req.params.userId;
-    const notifications = await Notification.find({
-      user: userId,
-      isRead: false
-    }).populate('user').sort({ message: 1 });
+    const { id } = req.params;
+    const { status } = req.body;
 
-    res.json({
-      count: notifications.length,
-      notifications
-    });
+    const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        error: 'Invalid status. Valid statuses: ' + validStatuses.join(', ')
+      });
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    )
+      .populate('user')
+      .populate('products.productId')
+      .populate('shippingAddress')
+      .populate('paymentMethod');
+
+    if (updatedOrder) {
+      return res.status(200).json(updatedOrder);
+    } else {
+      return res.status(404).json({ message: 'Order not found' });
+    }
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
+  }
+}
+
+async function updatePaymentStatus(req, res) {
+  try {
+    const { id } = req.params;
+    const { paymentStatus } = req.body;
+
+    const validPaymentStatuses = ['pending', 'paid', 'failed', 'refunded'];
+    if (!validPaymentStatuses.includes(paymentStatus)) {
+      return res.status(400).json({
+        error: 'Invalid payment status. Valid statuses: ' + validPaymentStatuses.join(', ')
+      });
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      { paymentStatus },
+      { new: true }
+    )
+      .populate('user')
+      .populate('products.productId')
+      .populate('shippingAddress')
+      .populate('paymentMethod');
+
+    if (updatedOrder) {
+      return res.status(200).json(updatedOrder);
+    } else {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function deleteOrder(req, res) {
+  try {
+    const { id } = req.params;
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Solo permitir eliminar órdenes canceladas
+    if (order.status !== 'cancelled') {
+      return res.status(400).json({
+        message: 'Only cancelled orders can be deleted'
+      });
+    }
+
+    await Order.findByIdAndDelete(id);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error });
   }
 }
 
 export {
-  getNotifications,
-  getNotificationById,
-  getNotificationByUser,
-  createNotification,
-  updateNotification,
-  deleteNotification,
-  markAsRead,
-  markAllAsReadByUser,
-  getUnreadNotificationsByUser,
+  getOrders,
+  getOrderById,
+  getOrdersByUser,
+  createOrder,
+  updateOrder,
+  cancelOrder,
+  updateOrderStatus,
+  updatePaymentStatus,
+  deleteOrder,
 };

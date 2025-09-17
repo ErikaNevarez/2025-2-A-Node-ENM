@@ -1,11 +1,12 @@
 import Notification from '../models/notification.js';
+import errorHandler from '../middlewares/errorHandler.js';
 
 async function getNotifications(req, res) {
   try {
     const notifications = await Notification.find().populate('user').sort({ message: 1 });
     res.json(notifications);
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 
@@ -18,7 +19,7 @@ async function getNotificationById(req, res) {
     }
     res.json(notification);
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 
@@ -31,7 +32,7 @@ async function getNotificationByUser(req, res) {
     }
     res.json(notifications);
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 
@@ -50,7 +51,7 @@ async function createNotification(req, res) {
     await newNotification.populate('user');
     res.status(201).json(newNotification);
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 
@@ -70,7 +71,7 @@ async function updateNotification(req, res) {
       return res.status(404).json({ message: 'Notification not found' });
     }
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 
@@ -85,7 +86,7 @@ async function deleteNotification(req, res) {
       return res.status(404).json({ message: 'Notification not found' });
     }
   } catch (error) {
-    errorHandler(error, req, res);
+    res.status(500).json({ error });
   }
 }
 
@@ -104,7 +105,7 @@ async function markAsRead(req, res) {
       return res.status(404).json({ message: 'Notification not found' });
     }
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 
@@ -121,7 +122,7 @@ async function markAllAsReadByUser(req, res) {
       modifiedCount: result.modifiedCount
     });
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 
@@ -138,7 +139,7 @@ async function getUnreadNotificationsByUser(req, res) {
       notifications
     });
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 

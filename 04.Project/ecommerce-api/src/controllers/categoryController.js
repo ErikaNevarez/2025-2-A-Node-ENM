@@ -1,22 +1,23 @@
 import Category from '../models/category.js';
+import errorHandler from '../middlewares/errorHandler.js';
 
 async function getCategories(req, res) {
   try {
     const categories = await Category.find().populate('parentCategory').sort({ name: 1 });
     res.status(200).json(categories);
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 async function getCategoryById(req, res) {
   try {
     const category = await Category.findById(req.params.id).populate('parentCategory');
     if (!category) {
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({ message: 'Category not found' });
     }
     res.status(200).json(category);
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 async function createCategory(req, res) {
@@ -31,7 +32,7 @@ async function createCategory(req, res) {
     await newCategory.save();
     res.status(201).json(newCategory);
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 async function updateCategory(req, res) {
@@ -46,11 +47,11 @@ async function updateCategory(req, res) {
     );
 
     if (!updatedCategory) {
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({ message: 'Category not found' });
     }
     res.status(200).json(updatedCategory);
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 async function deleteCategory(req, res) {
@@ -58,11 +59,11 @@ async function deleteCategory(req, res) {
     const idCategory = req.params.id;
     const deletedCategory = await Category.findByIdAndDelete(idCategory);
     if (!deletedCategory) {
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({ message: 'Category not found' });
     }
     res.status(204).send();
   } catch (error) {
-    errorHandler(error, req, res);
+    next(error);
   }
 }
 

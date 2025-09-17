@@ -6,15 +6,17 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
-} from '../config/controllers/productController.js';
+} from '../controllers/productController.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
+import isAdmin from '../middlewares/isAdminMiddleware.js';
 
 const router = express.Router();
 
 router.get('/products', getProducts);
 router.get('/products/category/:idCategory', getProductByCategory);
 router.get('/products/:id', getProductById);
-router.post('/products', createProduct);
-router.put('/products/:id', updateProduct);
-router.delete('/products/:id', deleteProduct);
+router.post('/products', authMiddleware, isAdmin, createProduct);
+router.put('/products/:id', authMiddleware, isAdmin, updateProduct);
+router.delete('/products/:id', authMiddleware, isAdmin, deleteProduct);
 
 export default router;

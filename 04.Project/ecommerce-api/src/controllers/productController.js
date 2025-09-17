@@ -1,14 +1,15 @@
-import Product from '../../models/product.js';
+import Product from '../models/product.js';
+import errorHandler from '../middlewares/errorHandler.js';
 
-async function getProducts(req, res, next) {
+async function getProducts(req, res) {
   try {
     const products = await Product.find().populate('category').sort({ name: 1 });
     res.json(products);
   } catch (error) {
-    errorHandler(error, req, res, next);
+    next(error);
   }
 }
-async function getProductById(req, res, next) {
+async function getProductById(req, res) {
   try {
     const id = req.params.id;
     const product = await Product.findById(id).populate('category');
@@ -17,11 +18,11 @@ async function getProductById(req, res, next) {
     }
     res.json(product);
   } catch (error) {
-    errorHandler(error, req, res, next);
+    next(error);
   }
 }
 
-async function getProductByCategory(req, res, next) {
+async function getProductByCategory(req, res) {
   try {
     const id = req.params.idCategory;
     const products = await Product
@@ -33,11 +34,11 @@ async function getProductByCategory(req, res, next) {
     }
     res.json(products);
   } catch (error) {
-    errorHandler(error, req, res, next);
+    res.status(500).json({ error });
   }
 }
 
-async function createProduct(req, res, next) {
+async function createProduct(req, res) {
   try {
     const { name, description, price, stock, imagesUrl, category } = req.body;
 
@@ -48,10 +49,10 @@ async function createProduct(req, res, next) {
     const newProduct = await Product.create({ name, description, price, stock, imagesUrl, category });
     res.status(201).json(newProduct);
   } catch (error) {
-    errorHandler(error, req, res, next);
+    next(error);
   }
 }
-async function updateProduct(req, res, next) {
+async function updateProduct(req, res) {
   try {
     const id = req.params.id;
     const { name, description, price, stock, imagesUrl, category } = req.body;
@@ -70,10 +71,10 @@ async function updateProduct(req, res, next) {
     }
     res.status(200).json(updatedProduct);
   } catch (error) {
-    errorHandler(error, req, res, next);
+    next(error);
   }
 }
-async function deleteProduct(req, res, next) {
+async function deleteProduct(req, res) {
   try {
     const id = req.params.id;
     const deletedProduct = await Product.findByIdAndDelete(id);
@@ -82,7 +83,7 @@ async function deleteProduct(req, res, next) {
     }
     res.status(204).send();
   } catch (error) {
-    errorHandler(error, req, res, next);
+    next(error);
   }
 }
 
