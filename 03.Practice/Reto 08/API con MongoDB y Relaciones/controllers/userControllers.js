@@ -21,6 +21,7 @@ const getUserProfile = async (req, res, next) => {
   }
 };
 
+
 // Obtener todos los usuarios (solo admin)
 const getAllUsers = async (req, res, next) => {
   try {
