@@ -3,7 +3,7 @@
 
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'; 
-import User from '../../models/user.js';
+import User from '../models/user.js';
 
 const generateToken = (userId, displayName, role)=>{
     return jwt.sign({userId, displayName, role}, 
@@ -45,7 +45,7 @@ async function register(req,res) {
         await newUser.save();
         res.status(201).json({displayName, email, phone}); 
     } catch (error) {
-        res.status(500).json({error:'Internal Server Error'}); 
+       errorHandler(error, req, res);
     }       
 }
 
@@ -67,6 +67,6 @@ async function login(req, res) {
         const token =generateToken(userExist._id, userExist.displayName, userExist. role); 
         res.status(200).json({token});
     }catch (error) {
-        res.status(500).json({error:'Internal Server Error'}); 
+       errorHandler(error, req, res);
     }    
 }
